@@ -8,6 +8,8 @@
 
 #include <stdlib.h>
 
+#include <zoner/zon_allocator.h>
+
 typedef struct {
 	size_t size;
 	size_t index;
@@ -20,7 +22,10 @@ ZonLinear zon_linearCreate(void *, size_t);
 /* returns the managed ememory back and sets allocator size to 0 */
 void *zon_linearUnlock(ZonLinear *);
 
+/* wraps the allocator in the generic interface */
+ZonAllocator zon_linearInterface(ZonLinear *);
+
 /* allocates */
 void *zon_linearMalloc(ZonLinear *, size_t);
 
-#endif //__Z_LINEAR__
+#endif //__ZON_LINEAR__
