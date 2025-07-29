@@ -5,14 +5,14 @@ Zoner is a memory management library for C with focus on speed and modularity.
 different needs such as linear allocator, pool allocator, etc.<br />
 
 ## Coding Convention
-Please see [CODING_CONVENTION.md](docs/CODING_CONVENTIONS.md).
+Please see [CODING_CONVENTIONS.md](docs/CODING_CONVENTIONS.md).
 
 ## Usage
 ### Attention
 Please don't use the main branch. The main branch is for development 
 purposes. Please use releases or other branches which will be added later.
 
-###Basics
+### Basics
 A documentation for usage will be added later. Here are some examples 
 for now.
 ```c
