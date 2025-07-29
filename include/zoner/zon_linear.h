@@ -19,7 +19,7 @@ typedef struct {
 /* creates a linear allocator */
 ZonLinear zon_linearCreate(void *, size_t);
 
-/* returns the managed ememory back and sets allocator size to 0 */
+/* returns the managed ememory back */
 void *zon_linearUnlock(ZonLinear *);
 
 /* wraps the allocator in the generic interface */

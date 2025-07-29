@@ -7,6 +7,7 @@ set(LIB_NAME zoner)
 
 add_library(${LIB_NAME} STATIC
 	src/zon_linear.c
+	src/zon_flpool.c
 )
 target_include_directories(${LIB_NAME}
 	PUBLIC
