@@ -19,6 +19,9 @@ typedef struct {
 /* creates a linear allocator */
 ZonLinear zon_linearCreate(void *, size_t);
 
+/* resets the index to 0 */
+void zon_linearReset(ZonLinear *);
+
 /* returns the managed ememory back */
 void *zon_linearUnlock(ZonLinear *);
 

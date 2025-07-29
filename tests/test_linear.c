@@ -35,6 +35,17 @@ main()
 	assert((char *)buf4 == (char *)buf3 + 64);
 	assert(l2.index == 64 + 128);
 
+	assert(interface.malloc(&interface, 512) == NULL);
+	assert(l2.index == 64 + 128);
+
+	zon_linearReset(&l2);
+	assert(l2.index == 0);
+	assert(zon_linearMalloc(&l2, 512) != NULL);
+	assert(l2.index == 512);
+
+	zon_linearReset(&l1);
+	assert(l1.index == 0);
+
 	assert(zon_linearUnlock(&l2) == buf2);
 	assert(l2.memory == NULL);
 	assert(zon_linearUnlock(&l1) == mem);

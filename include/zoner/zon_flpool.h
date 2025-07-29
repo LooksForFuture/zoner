@@ -13,10 +13,15 @@
 typedef struct {
 	void *memory;
 	void *head;
+	size_t size; //size of the type of items in pool
+	size_t count; //count of objects in pool
 } ZonFLPool;
 
 /* returns an flpool managing the given memory */
 ZonFLPool zon_flpoolCreate(void *, size_t, size_t);
+
+/* resets the pool */
+void zon_flpoolReset(ZonFLPool *);
 
 /* returns the managed memory back */
 void *zon_flpoolUnlock(ZonFLPool *);
@@ -29,8 +34,5 @@ void *zon_flpoolPop(ZonFLPool *);
  * attention: writes data the item
  */
 void zon_flpoolPush(ZonFLPool *, void *);
-
-/* resets the pool */
-void zon_flpoolReset(ZonFLPool *);
 
 #endif //__ZON_FLPOOL__

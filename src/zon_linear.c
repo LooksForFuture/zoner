@@ -6,6 +6,13 @@ zon_linearCreate(void *memory, size_t size)
 	return (ZonLinear){ size, 0, memory };
 }
 
+void
+zon_linearReset(ZonLinear *allocator)
+{
+	allocator->index = 0;
+}
+
+
 void *
 zon_linearUnlock(ZonLinear *allocator)
 {

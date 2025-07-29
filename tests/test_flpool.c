@@ -2,6 +2,8 @@
 
 #include <assert.h>
 
+#define OBJECT_COUNT 200
+
 typedef struct {
 	float x;
 	float y;
@@ -20,10 +22,16 @@ int
 main()
 {
 	assert(sizeof(Avatar) >= sizeof(void *));
-	Avatar avatars[200];
-	ZonFLPool pool = zon_flpoolCreate(avatars, sizeof(Avatar), 200);
+	Avatar avatars[OBJECT_COUNT];
+	ZonFLPool pool = zon_flpoolCreate(avatars,
+			sizeof(Avatar), OBJECT_COUNT);
 	assert(pool.memory == avatars);
 	assert(pool.head == avatars);
+
+	for (int i = 0; i < OBJECT_COUNT - 1; i++) {
+		assert(*(void **)&avatars[i] == &avatars[i+1]);
+	}
+	assert(*(void **)&avatars[OBJECT_COUNT-1] == NULL);
 
 	Avatar *av1 = (Avatar *)zon_flpoolPop(&pool);
 	assert(av1 == avatars);
@@ -51,6 +59,10 @@ main()
 
 	zon_flpoolReset(&pool);
 	assert(pool.head == pool.memory && pool.head == avatars);
+	for (int i = 0; i < OBJECT_COUNT - 1; i++) {
+		assert(*(void **)&avatars[i] == &avatars[i+1]);
+	}
+	assert(*(void **)&avatars[OBJECT_COUNT-1] == NULL);
 
 	assert(zon_flpoolUnlock(&pool) == avatars);
 	assert(pool.memory == NULL);
