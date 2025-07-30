@@ -1,5 +1,9 @@
 #include <zoner/zon_linear.h>
 
+#ifndef NDEBUG
+#include <assert.h>
+#endif
+
 ZonLinear
 zon_linearCreate(void *memory, size_t size)
 {
@@ -25,6 +29,9 @@ zon_linearUnlock(ZonLinear *allocator)
 void *
 zon_linearMalloc(ZonLinear *allocator, size_t size)
 {
+#ifndef NDEBUG
+	assert(allocator->memory);
+#endif
 	if (allocator->index + size > allocator->size) return NULL;
 	void *ptr = (char *)allocator->memory + allocator->index;
 	allocator->index += size;

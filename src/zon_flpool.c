@@ -1,8 +1,15 @@
 #include <zoner/zon_flpool.h>
 
+#ifndef NDEBUG
+#include <assert.h>
+#endif
+
 ZonFLPool
 zon_flpoolCreate(void *memory, size_t size, size_t count)
 {
+#ifndef NDEBUG
+	assert(memory);
+#endif
 	ZonFLPool pool;
 	pool.memory = memory;
 	pool.size = size;
@@ -23,6 +30,9 @@ zon_flpoolCreate(void *memory, size_t size, size_t count)
 void
 zon_flpoolReset(ZonFLPool *pool)
 {
+#ifndef NDEBUG
+	assert(pool->memory);
+#endif
 	char *current = (char *)pool->memory;
 	for (size_t i = 0; i < pool->count - 1; ++i) {
 		void *next = current + pool->size;
@@ -39,12 +49,16 @@ zon_flpoolUnlock(ZonFLPool *pool)
 {
 	void *ptr = pool->memory;
 	pool->memory = NULL;
+	pool->head = NULL;
 	return ptr;
 }
 
 void *
 zon_flpoolPop(ZonFLPool *pool)
 {
+#ifndef NDEBUG
+	assert(pool->memory);
+#endif
 	if (!pool->head) return NULL;
 
 	void *object = pool->head;
@@ -55,6 +69,9 @@ zon_flpoolPop(ZonFLPool *pool)
 void
 zon_flpoolPush(ZonFLPool *pool, void *item)
 {
+#ifndef NDEBUG
+	assert(pool->memory);
+#endif
 	*(void **)item = pool->head;
 	pool->head = item;
 }
