@@ -1,33 +1,50 @@
-#include <zoner/zon_linear.h>
+#include <zoner/zon_arena.h>
 
 #ifndef NDEBUG
 #include <assert.h>
 #endif
 
-ZonLinear
-zon_linearCreate(void *memory, size_t size)
+ZonArena
+zon_arenaCreate(void *memory, size_t size)
 {
-	return (ZonLinear){ size, 0, memory };
+	ZonArena arena;
+	arena.size = size;
+	arena.index = 0;
+	arena.mark = 0;
+	arena.memory = memory;
+	return arena;
 }
 
 void
-zon_linearReset(ZonLinear *allocator)
+zon_arenaReset(ZonArena *allocator)
 {
+	allocator->mark = 0;
 	allocator->index = 0;
 }
 
 
 void *
-zon_linearUnlock(ZonLinear *allocator)
+zon_arenaUnlock(ZonArena *allocator)
 {
 	void *ptr = allocator->memory;
 	allocator->memory = NULL;
 	return ptr;
 }
 
+void
+zon_arenaMark(ZonArena *allocator, size_t index)
+{
+	allocator->mark = index;
+}
+
+void
+zon_arenaRewind(ZonArena *allocator)
+{
+	allocator->index = allocator->mark;
+}
 
 void *
-zon_linearMalloc(ZonLinear *allocator, size_t size)
+zon_arenaMalloc(ZonArena *allocator, size_t size)
 {
 #ifndef NDEBUG
 	assert(allocator->memory);
@@ -41,7 +58,7 @@ zon_linearMalloc(ZonLinear *allocator, size_t size)
 static void *
 mallocInterface(ZonAllocator *interface, size_t size)
 {
-	ZonLinear *allocator = interface->ctx;
+	ZonArena *allocator = interface->ctx;
 #ifndef NDEBUG
 	assert(allocator->memory);
 #endif
@@ -52,7 +69,7 @@ mallocInterface(ZonAllocator *interface, size_t size)
 }
 
 ZonAllocator
-zon_linearInterface(ZonLinear *allocator)
+zon_arenaInterface(ZonArena *allocator)
 {
 	ZonAllocator interface;
 	interface.ctx = allocator;

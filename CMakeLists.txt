@@ -6,7 +6,11 @@ project(zoner
 set(LIB_NAME zoner)
 
 add_library(${LIB_NAME} STATIC
+	#allocators
 	src/zon_linear.c
+	src/zon_arena.c
+
+	#pools
 	src/zon_flpool.c
 )
 target_include_directories(${LIB_NAME}
