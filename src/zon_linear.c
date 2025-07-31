@@ -13,6 +13,9 @@ zon_linearCreate(void *memory, size_t size)
 void
 zon_linearReset(ZonLinear *allocator)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	allocator->index = 0;
 }
 
@@ -20,6 +23,9 @@ zon_linearReset(ZonLinear *allocator)
 void *
 zon_linearUnlock(ZonLinear *allocator)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	void *ptr = allocator->memory;
 	allocator->memory = NULL;
 	return ptr;
@@ -30,7 +36,8 @@ void *
 zon_linearMalloc(ZonLinear *allocator, size_t size)
 {
 #ifndef NDEBUG
-	assert(allocator->memory);
+	assert(allocator != NULL);
+	assert(allocator->memory != NULL);
 #endif
 	if (allocator->index + size > allocator->size) return NULL;
 	void *ptr = (char *)allocator->memory + allocator->index;
@@ -41,10 +48,17 @@ zon_linearMalloc(ZonLinear *allocator, size_t size)
 static void *
 mallocInterface(ZonAllocator *interface, size_t size)
 {
-	ZonLinear *allocator = interface->ctx;
 #ifndef NDEBUG
-	assert(allocator->memory);
+	assert(interface != NULL);
 #endif
+
+	ZonLinear *allocator = interface->ctx;
+
+#ifndef NDEBUG
+	assert(allocator != NULL);
+	assert(allocator->memory != NULL);
+#endif
+
 	if (allocator->index + size > allocator->size) return NULL;
 	void *ptr = (char *)allocator->memory + allocator->index;
 	allocator->index += size;
@@ -54,6 +68,9 @@ mallocInterface(ZonAllocator *interface, size_t size)
 ZonAllocator
 zon_linearInterface(ZonLinear *allocator)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	ZonAllocator interface;
 	interface.ctx = allocator;
 	interface.malloc = &mallocInterface;

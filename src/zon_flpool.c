@@ -8,7 +8,9 @@ ZonFLPool
 zon_flpoolCreate(void *memory, size_t size, size_t count)
 {
 #ifndef NDEBUG
-	assert(memory);
+	assert(memory != NULL);
+	assert(size != 0);
+	assert(count != 0);
 #endif
 	ZonFLPool pool;
 	pool.memory = memory;
@@ -31,7 +33,8 @@ void
 zon_flpoolReset(ZonFLPool *pool)
 {
 #ifndef NDEBUG
-	assert(pool->memory);
+	assert(pool != NULL);
+	assert(pool->memory != NULL);
 #endif
 	char *current = (char *)pool->memory;
 	for (size_t i = 0; i < pool->count - 1; ++i) {
@@ -47,6 +50,9 @@ zon_flpoolReset(ZonFLPool *pool)
 void *
 zon_flpoolUnlock(ZonFLPool *pool)
 {
+#ifndef NDEBUG
+	assert(pool != NULL);
+#endif
 	void *ptr = pool->memory;
 	pool->memory = NULL;
 	pool->head = NULL;
@@ -57,7 +63,8 @@ void *
 zon_flpoolPop(ZonFLPool *pool)
 {
 #ifndef NDEBUG
-	assert(pool->memory);
+	assert(pool != NULL);
+	assert(pool->memory != NULL);
 #endif
 	if (!pool->head) return NULL;
 
@@ -70,7 +77,11 @@ void
 zon_flpoolPush(ZonFLPool *pool, void *item)
 {
 #ifndef NDEBUG
-	assert(pool->memory);
+	assert(pool != NULL);
+	assert(item != NULL);
+	assert(pool->memory != NULL);
+	assert((char *)pool->memory + pool->count *
+			pool->size > (char *)item);
 #endif
 	*(void **)item = pool->head;
 	pool->head = item;

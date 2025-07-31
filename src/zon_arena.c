@@ -18,6 +18,9 @@ zon_arenaCreate(void *memory, size_t size)
 void
 zon_arenaReset(ZonArena *allocator)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	allocator->mark = 0;
 	allocator->index = 0;
 }
@@ -26,6 +29,9 @@ zon_arenaReset(ZonArena *allocator)
 void *
 zon_arenaUnlock(ZonArena *allocator)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	void *ptr = allocator->memory;
 	allocator->memory = NULL;
 	return ptr;
@@ -34,12 +40,18 @@ zon_arenaUnlock(ZonArena *allocator)
 void
 zon_arenaMark(ZonArena *allocator, size_t index)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	allocator->mark = index;
 }
 
 void
 zon_arenaRewind(ZonArena *allocator)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	allocator->index = allocator->mark;
 }
 
@@ -47,7 +59,8 @@ void *
 zon_arenaMalloc(ZonArena *allocator, size_t size)
 {
 #ifndef NDEBUG
-	assert(allocator->memory);
+	assert(allocator != NULL);
+	assert(allocator->memory != NULL);
 #endif
 	if (allocator->index + size > allocator->size) return NULL;
 	void *ptr = (char *)allocator->memory + allocator->index;
@@ -58,10 +71,17 @@ zon_arenaMalloc(ZonArena *allocator, size_t size)
 static void *
 mallocInterface(ZonAllocator *interface, size_t size)
 {
-	ZonArena *allocator = interface->ctx;
 #ifndef NDEBUG
-	assert(allocator->memory);
+	assert(interface != NULL);
 #endif
+
+	ZonArena *allocator = interface->ctx;
+
+#ifndef NDEBUG
+	assert(allocator != NULL);
+	assert(allocator->memory != NULL);
+#endif
+
 	if (allocator->index + size > allocator->size) return NULL;
 	void *ptr = (char *)allocator->memory + allocator->index;
 	allocator->index += size;
@@ -71,6 +91,9 @@ mallocInterface(ZonAllocator *interface, size_t size)
 ZonAllocator
 zon_arenaInterface(ZonArena *allocator)
 {
+#ifndef NDEBUG
+	assert(allocator != NULL);
+#endif
 	ZonAllocator interface;
 	interface.ctx = allocator;
 	interface.malloc = &mallocInterface;
