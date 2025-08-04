@@ -9,6 +9,7 @@ add_library(${LIB_NAME} STATIC
 	#allocators
 	src/zon_linear.c
 	src/zon_arena.c
+	src/zon_stack.c
 
 	#pools
 	src/zon_flpool.c
@@ -18,7 +19,7 @@ target_include_directories(${LIB_NAME}
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
-set_property(TARGET ${LIB_NAME} PROPERTY C_STANDARD 99) #setting c standard to c99
+set_property(TARGET ${LIB_NAME} PROPERTY C_STANDARD 11) #setting c standard to c11
 set_property(TARGET ${LIB_NAME} PROPERTY C_STANDARD_REQUIRED ON)
 set_property(TARGET ${LIB_NAME} PROPERTY C_EXTENSIONS OFF)
 
