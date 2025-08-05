@@ -7,12 +7,13 @@
  * Note: Each allocation stores its previous index, adding minimal overhead
  */
 
-#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
 
 typedef struct {
-	size_t size;
-	size_t index;
-	void *memory;
+	void *base;
+	uint8_t *current;
+	uint8_t *end;
 } ZonStack;
 
 /* creates a stack allocator */
