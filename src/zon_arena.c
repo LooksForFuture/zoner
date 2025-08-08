@@ -3,16 +3,21 @@
 #ifndef NDEBUG
 #include <assert.h>
 #endif
+#include <stddef.h>
+#include <stdint.h>
+#include <stdalign.h>
+
+#define ZON_ALIGN_PTR(p, align) \
+	(uint8_t*)(((uintptr_t)p + align - 1) & ~((uintptr_t)align - 1))
 
 ZonArena
-zon_arenaCreate(void *memory, size_t size)
+zon_arenaCreate(void *base, size_t size)
 {
-	ZonArena arena;
-	arena.size = size;
-	arena.index = 0;
-	arena.mark = 0;
-	arena.memory = memory;
-	return arena;
+	return (ZonArena){
+		.base=base,
+		.current=base,
+		.end= (uint8_t*)base + size
+	};
 }
 
 void
@@ -21,10 +26,8 @@ zon_arenaReset(ZonArena *allocator)
 #ifndef NDEBUG
 	assert(allocator != NULL);
 #endif
-	allocator->mark = 0;
-	allocator->index = 0;
+	allocator->current = allocator->base;
 }
-
 
 void *
 zon_arenaUnlock(ZonArena *allocator)
@@ -32,70 +35,52 @@ zon_arenaUnlock(ZonArena *allocator)
 #ifndef NDEBUG
 	assert(allocator != NULL);
 #endif
-	void *ptr = allocator->memory;
-	allocator->memory = NULL;
+	void *ptr = allocator->base;
+	allocator->base = NULL;
+	allocator->current = NULL;
 	return ptr;
 }
 
-void
-zon_arenaMark(ZonArena *allocator, size_t index)
+void *
+zon_arenaAlloc(ZonArena *allocator, size_t size, size_t alignment)
 {
 #ifndef NDEBUG
-	assert(allocator != NULL);
+	assert(allocator);
+	assert(allocator->current);
+	//alignment should be power of 2
+	assert(alignment != 0 && (alignment & (alignment - 1)) == 0);
 #endif
-	allocator->mark = index;
-}
+	uint8_t *aligned = ZON_ALIGN_PTR(allocator->current, alignment);
+	uint8_t *next = aligned + size;
+	if (next > allocator->end) return NULL;
 
-void
-zon_arenaRewind(ZonArena *allocator)
-{
-#ifndef NDEBUG
-	assert(allocator != NULL);
-#endif
-	allocator->index = allocator->mark;
+	allocator->current = next;
+	return aligned;
 }
 
 void *
 zon_arenaMalloc(ZonArena *allocator, size_t size)
 {
 #ifndef NDEBUG
-	assert(allocator != NULL);
-	assert(allocator->memory != NULL);
+	assert(allocator && allocator->base);
 #endif
-	if (allocator->index + size > allocator->size) return NULL;
-	void *ptr = (char *)allocator->memory + allocator->index;
-	allocator->index += size;
-	return ptr;
+	return zon_arenaAlloc(allocator, size, alignof(max_align_t));
 }
 
-static void *
-mallocInterface(ZonAllocator *interface, size_t size)
+size_t
+zon_arenaMarker(ZonArena *allocator)
+{
+	return (size_t)(allocator->current - (uint8_t *)allocator->base);
+}
+
+void
+zon_arenaRewind(ZonArena *allocator, size_t marker)
 {
 #ifndef NDEBUG
-	assert(interface != NULL);
+	assert(marker <=
+	       (size_t)(allocator->current - (uint8_t *)allocator->base));
 #endif
-
-	ZonArena *allocator = interface->ctx;
-
-#ifndef NDEBUG
-	assert(allocator != NULL);
-	assert(allocator->memory != NULL);
-#endif
-
-	if (allocator->index + size > allocator->size) return NULL;
-	void *ptr = (char *)allocator->memory + allocator->index;
-	allocator->index += size;
-	return ptr;
+	allocator->current = (uint8_t *)allocator->base + marker;
 }
 
-ZonAllocator
-zon_arenaInterface(ZonArena *allocator)
-{
-#ifndef NDEBUG
-	assert(allocator != NULL);
-#endif
-	ZonAllocator interface;
-	interface.ctx = allocator;
-	interface.malloc = &mallocInterface;
-	return interface;
-}
+#undef ZON_ALIGN_PTR

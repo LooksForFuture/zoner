@@ -11,8 +11,8 @@
 int
 main()
 {
-	//align malloc
 	void *mem = malloc(MEM_SIZE);
+	assert(mem);
 
 	ZonStack stack = zon_stackCreate(mem, MEM_SIZE);
 	assert(stack.base == mem);
@@ -65,4 +65,5 @@ main()
 	assert(stack.base == NULL);
 
 	free(mem);
+	return 0;
 }

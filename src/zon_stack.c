@@ -99,4 +99,4 @@ zon_stackRewind(ZonStack *allocator, size_t marker)
         allocator->current = (uint8_t *)allocator->base + marker;
 }
 
-#undef ZON_ALIGN_UP
+#undef ZON_ALIGN_PTR
