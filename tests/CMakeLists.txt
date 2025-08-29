@@ -1,7 +1,8 @@
 #allocators
-add_executable(test_linear test_linear.c)
-target_link_libraries(test_linear zoner)
-add_test(NAME ZonLinearTest COMMAND test_linear)
+add_executable(test_heap test_heap.c)
+target_link_libraries(test_heap zoner)
+target_compile_options(test_heap PRIVATE -g)
+add_test(NAME ZonHeapTest COMMAND test_heap)
 
 add_executable(test_arena test_arena.c)
 target_link_libraries(test_arena zoner)
