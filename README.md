@@ -31,8 +31,8 @@ main()
     /* do stuff */
 
     /* Unlock memory managed by allocators to prevent further usage */
-    zon_linearUnlock(&l1);
-    free(zon_linearUnlock(&l2)); //unlock returns the pointer given at creation
+    zon_linearUnlock(&l2);
+    free(zon_linearUnlock(&l1)); //unlock returns the pointer given at creation
     return 0;
 }
 ```
