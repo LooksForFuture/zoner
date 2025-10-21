@@ -16,3 +16,9 @@ add_test(NAME ZonStackTest COMMAND test_stack)
 add_executable(test_flpool test_flpool.c)
 target_link_libraries(test_flpool zoner)
 add_test(NAME ZonFLPoolTest COMMAND test_flpool)
+
+#containers
+add_executable(test_da test_da.c)
+target_link_libraries(test_da zoner)
+add_test(NAME ZonDATest COMMAND test_da)
+target_compile_options(test_da PRIVATE -Wall -g)
